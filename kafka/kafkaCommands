@@ -1,0 +1,47 @@
+#Create topics
+kafka-topics --bootstrap-server [localhost]:[0000] --topic [topic] --create --partitions [partitionNum] --replication-factor [replicationNum]
+
+#List topics
+kafka-topics --bootstrap-server [localhost]:[0000] --list
+kafka-topics --bootstrap-server [localhost]:[0000] --describe --topic [topic]
+kafka-topics --bootstrap-server [localhost]:[0000] --describe
+
+#Alter topic partitions
+kafka-topics --bootstrap-server [localhost]:[0000] --alter --topic [topic] --partitions [partitionNum]
+
+#Delete topic
+kafka-topics --bootstrap-server [localhost]:[0000] --delete --topic [topic]
+
+#Produce messages
+kafka-console-producer --bootstrap-server [localhost]:[0000] --topic [topic]
+
+#Consume messages
+kafka-console-consumer --bootstrap-server [localhost]:[0000] --topic [topic]
+kafka-console-consumer --bootstrap-server [localhost]:[0000] --topic [topic] --from-beginning
+
+kafka-console-consumer --bootstrap-server [localhost]:[0000] --topic [topic] --group [group]
+
+Kafka topics
+
+kafka-configs --bootstrap-server [localhost]:[0000] --alter --entity-type [entity] --entity-name [name] --add-config [config]
+
+Max message bytes
+  max.message.bytes
+    10485880 *10MB
+  max.partition.fetch.bytes
+    10485880 *10MB
+  max.request.size
+    10485880 *10MB
+
+Message retaining
+  log.retention.hours
+  log.retention.minutes
+  log.retention.ms
+  log.retention.bytes
+  log.cleanup.policy
+    delete
+    compact
+
+Cool links
+  https://www.conduktor.io/kafka/kafka-topics-naming-convention/
+  https://cnr.sh/essays/how-paint-bike-shed-kafka-topic-naming-conventions
