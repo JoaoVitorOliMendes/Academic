@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,7 +7,33 @@ struct LinkNode {
     struct LinkNode* prev;
 };
 
-void insert(struct LinkNode **node, int number) {
+void insertToNode(struct LinkNode **node, int number) {
+    struct LinkNode* newNode = (struct LinkNode*)malloc(sizeof(struct LinkNode));
+
+    if (newNode == NULL) {
+        printf("Memory not allocated.\n");
+        exit(0);
+    } else {
+        newNode->number = number;
+        
+        //Head of List
+        if (*node == NULL) {
+            *node = newNode;
+            newNode->next = NULL;
+            return;
+        } else {
+            printf("%p, %d\n", *node, (*node)->number);
+            newNode->prev = *node;
+            newNode->next = (*node)->next;
+            if ((*node)->next != NULL) {
+                newNode->next->prev = newNode;
+            }
+            newNode->prev->next = newNode;
+        }
+    }
+}
+
+void insertAtEnd(struct LinkNode **node, int number) {
     struct LinkNode* newNode = (struct LinkNode*)malloc(sizeof(struct LinkNode));
 
     if (newNode == NULL) {
@@ -47,6 +72,37 @@ struct LinkNode* getNodeByVal(struct LinkNode **node, int number) {
     return NULL;
 }
 
+void linkLastNode(struct LinkNode **node) {
+    //Point last node to new node
+    struct LinkNode* current = *node;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    
+    current->next = *node;
+}
+
+//Floyd’s Cycle Finding
+int detectLoop(struct LinkNode **node) {
+    if(*node==NULL) return 0;
+    //Point to head
+    struct LinkNode* head = *node;
+    while (head->prev != NULL) {
+        head = head->prev;
+    }
+    if (head->next==NULL) return 0;
+
+    struct LinkNode *slowPointer = head, *fastPointer = head;
+    while (slowPointer != NULL && fastPointer != NULL && fastPointer->next != NULL) {
+        slowPointer = slowPointer->next;
+        fastPointer = fastPointer->next->next;
+        if (slowPointer == fastPointer)
+            return 1;
+    }
+
+    return 0;
+}
+
 int removeNodeByVal(struct LinkNode **node, int number) {
     struct LinkNode* current = *node;
 
@@ -63,8 +119,12 @@ int removeNodeByVal(struct LinkNode **node, int number) {
     return -1;
 }
 
-void printList(struct LinkNode* node) {
-    struct LinkNode* current = node;
+void printList(struct LinkNode **node) {
+    if (detectLoop(node)==1) {
+        printf("There is a loop\n");
+        return;
+    }
+    struct LinkNode* current = *node;
     while (current != NULL) {
         printf("%d -> ", current->number);
         current = current->next;
@@ -74,15 +134,18 @@ void printList(struct LinkNode* node) {
 
 int main() {
     struct LinkNode* head = NULL;
-    insert(&head, 10);
-    insert(&head, 20);
-    insert(&head, 30);
-    insert(&head, 40);
+    insertToNode(&head, 10);
+    insertToNode(&head, 20);
+    insertToNode(&head, 30);
+    insertAtEnd(&head, 40);
 
     printf("Linked List: \n");
-    printList(head);
+    printList(&head);
 
-    struct Node* found = getNodeByVal(&head, 30);
+    struct LinkNode* found = getNodeByVal(&head, 30);
+    // linkLastNode(&found);
+    // printf("Linked List: \n");
+    // printList(&head);
 
     printf("Find address: %p, val: %i\n", &found, found->number);
 
@@ -90,7 +153,7 @@ int main() {
 
     printf("Node removal: %i\n", removal);
     printf("Linked List: \n");
-    printList(head);
+    printList(&head);
 
     return 0;
 }
